@@ -1,8 +1,22 @@
-   provider "aws" {
-     region = "us-east-1"  # Set your desired AWS region
-   }
+provider "aws" {
+  region = "us-east-1"
+}
 
-   resource "aws_instance" "example" {
-     ami           = "ami-0c55b159cbfafe1f0"  # Specify an appropriate AMI ID
-     instance_type = "t2.micro"
-   }
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
+
+resource "aws_instance" "example" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "simple-instance"
+  }
+}
